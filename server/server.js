@@ -98,7 +98,50 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auto-repl
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ Connexion à MongoDB réussie'))
+.then(async () => {
+  console.log('✅ Connexion à MongoDB réussie');
+
+  // Initialize users in production
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const User = require('./models/User');
+
+      // Check if admin user exists
+      const existingAdmin = await User.findOne({ email: 'admin@chatbot.com' });
+      if (!existingAdmin) {
+        // Create admin user
+        const adminUser = new User({
+          username: 'Admin',
+          email: 'admin@chatbot.com',
+          password: 'admin123',
+          role: 'admin',
+          isActive: true
+        });
+        await adminUser.save();
+        console.log('✅ Admin user created: admin@chatbot.com / admin123');
+      }
+
+      // Check if regular user exists
+      const existingUser = await User.findOne({ email: 'user@chatbot.com' });
+      if (!existingUser) {
+        // Create regular user
+        const regularUser = new User({
+          username: 'User',
+          email: 'user@chatbot.com',
+          password: 'user123',
+          role: 'user',
+          isActive: true
+        });
+        await regularUser.save();
+        console.log('✅ Regular user created: user@chatbot.com / user123');
+      }
+    } catch (error) {
+      if (error.code !== 11000) { // Ignore duplicate key errors
+        console.error('❌ Error creating users:', error);
+      }
+    }
+  }
+})
 .catch(err => console.error('❌ Erreur de connexion MongoDB:', err));
 
 // Socket.IO connection handling

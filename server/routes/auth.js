@@ -54,33 +54,9 @@ router.post('/register', registerValidation, async (req, res) => {
     // Check if MongoDB is connected
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState !== 1) {
-      // MongoDB not connected - create demo user for testing
-      console.log('🧪 Mode test: Création d\'un utilisateur de démonstration');
-
-      const demoUser = {
-        _id: 'demo-user-id',
-        username,
-        email,
-        role: 'admin',
-        settings: {
-          language: 'fr',
-          timezone: 'Europe/Paris',
-          notifications: {
-            email: true,
-            push: true,
-            sms: false
-          }
-        }
-      };
-
-      // Generate JWT token for demo user
-      const token = generateToken(demoUser._id);
-
-      return res.status(201).json({
-        message: 'Utilisateur de démonstration créé avec succès (Mode Test)',
-        token,
-        user: demoUser,
-        demo: true
+      return res.status(503).json({
+        message: 'Service temporairement indisponible. Veuillez réessayer plus tard.',
+        error: 'Database connection unavailable'
       });
     }
 
@@ -150,33 +126,9 @@ router.post('/login', loginValidation, sensitiveOperationLimit(5), async (req, r
     // Check if MongoDB is connected
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState !== 1) {
-      // MongoDB not connected - allow demo login
-      console.log('🧪 Mode test: Connexion utilisateur de démonstration');
-
-      const demoUser = {
-        _id: 'demo-user-id',
-        username: 'demo',
-        email: email,
-        role: 'admin',
-        settings: {
-          language: 'fr',
-          timezone: 'Europe/Paris',
-          notifications: {
-            email: true,
-            push: true,
-            sms: false
-          }
-        }
-      };
-
-      // Generate JWT token for demo user
-      const token = generateToken(demoUser._id);
-
-      return res.json({
-        message: 'Connexion réussie (Mode Test)',
-        token,
-        user: demoUser,
-        demo: true
+      return res.status(503).json({
+        message: 'Service temporairement indisponible. Veuillez réessayer plus tard.',
+        error: 'Database connection unavailable'
       });
     }
 
