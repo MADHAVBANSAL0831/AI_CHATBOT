@@ -51,14 +51,7 @@ router.post('/register', registerValidation, async (req, res) => {
 
     const { username, email, password } = req.body;
 
-    // Check if MongoDB is connected
-    const mongoose = require('mongoose');
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({
-        message: 'Service temporairement indisponible. Veuillez réessayer plus tard.',
-        error: 'Database connection unavailable'
-      });
-    }
+
 
     // Check if user already exists
     const existingUser = await User.findOne({
@@ -123,14 +116,7 @@ router.post('/login', loginValidation, sensitiveOperationLimit(5), async (req, r
 
     const { email, password } = req.body;
 
-    // Check if MongoDB is connected
-    const mongoose = require('mongoose');
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({
-        message: 'Service temporairement indisponible. Veuillez réessayer plus tard.',
-        error: 'Database connection unavailable'
-      });
-    }
+
 
     // Find user
     const user = await User.findOne({ email });
