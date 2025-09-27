@@ -1,15 +1,10 @@
 {
   "version": 2,
   "name": "ai-chatbot-frontend",
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
   "routes": [
     {
       "src": "/static/(.*)",
@@ -19,8 +14,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "buildCommand": "cd client && npm run build",
-  "outputDirectory": "client/build",
-  "installCommand": "cd client && npm install"
+  ]
 }
