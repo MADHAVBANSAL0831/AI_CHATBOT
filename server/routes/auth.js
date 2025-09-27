@@ -10,6 +10,29 @@ const {
 
 const router = express.Router();
 
+// Auth health check
+router.get('/health', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const userCount = await User.countDocuments();
+    const adminCount = await User.countDocuments({ role: 'admin' });
+
+    res.json({
+      status: 'OK',
+      message: 'Auth service operational',
+      users: userCount,
+      admins: adminCount,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Database connection issue',
+      error: error.message
+    });
+  }
+});
+
 // Validation rules
 const registerValidation = [
   body('username')
