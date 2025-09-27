@@ -74,7 +74,12 @@ router.post('/register', registerValidation, async (req, res) => {
 
     const { username, email, password } = req.body;
 
-
+    // Production test user - bypasses database
+    if (process.env.NODE_ENV === 'production' && email === 'test@gmail.com') {
+      return res.status(409).json({
+        message: 'Utilisateur de test déjà disponible. Utilisez test@gmail.com / Test@1234 pour vous connecter.'
+      });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({
@@ -139,7 +144,32 @@ router.post('/login', loginValidation, sensitiveOperationLimit(5), async (req, r
 
     const { email, password } = req.body;
 
+    // Production test user - bypasses database
+    if (process.env.NODE_ENV === 'production' && email === 'test@gmail.com' && password === 'Test@1234') {
+      const testUser = {
+        id: 'test-user-production',
+        username: 'Test User',
+        email: 'test@gmail.com',
+        role: 'user',
+        settings: {
+          language: 'fr',
+          timezone: 'Europe/Paris',
+          notifications: {
+            email: true,
+            push: true,
+            sms: false
+          }
+        }
+      };
 
+      const token = generateToken(testUser.id);
+
+      return res.json({
+        message: 'Connexion réussie (Utilisateur de test)',
+        token,
+        user: testUser
+      });
+    }
 
     // Find user
     const user = await User.findOne({ email });
